@@ -538,12 +538,24 @@ class RPC {
     if (message._ === 'mt_rpc_result') {
       this.ackMessage(messageId);
 
-      const waitMessage = this.messagesWaitResponse.get(message.req_msg_id);
+      const waitMessage = await this.messagesWaitResponse.get(message.req_msg_id);
 
       if (message.result._ === 'mt_rpc_error') {
-        waitMessage.reject(message.result);
+        try { 
+          waitMessage.reject(message.result);
+        }
+        catch (e) {
+          console.log(e)
+          return null
+        }
       } else {
-        waitMessage.resolve(message.result);
+        try { 
+          waitMessage.resolve(message.result);
+        }
+        catch (e) {
+          console.log(e)
+          return null
+        }
       }
 
       this.messagesWaitResponse.delete(message.req_msg_id);
